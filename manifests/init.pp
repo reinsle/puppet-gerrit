@@ -15,9 +15,11 @@
 #   Robert Einsle <robert@einsle.de>
 #
 class gerrit (
-	$gerrit_version = params_lookup('gerrit_version')
-) inherits
-gerrit::params {
-	
+  $gerrit_version       = params_lookup('gerrit_version'),
+  $gerrit_user          = params_lookup('gerrit_user'),
+  $gerrit_home          = params_lookup('gerrit_home'),
+  $gerrit_database_type = params_lookup('gerrit_database_type')
+  ) inherits gerrit::params {
+
 }
 
