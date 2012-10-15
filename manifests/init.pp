@@ -40,4 +40,21 @@ class gerrit (
         ensure     => "present",
         managehome => true,
     }
+
+    # Funktion für Download eines Files per URL
+    define download ($uri, $timeout = 300) {
+        exec { "download $uri":
+            command => "wget -q '$uri' -O $name",
+            creates => $name,
+            timeout => $timeout,
+            require => Package[ "wget" ],
+        }
+    }
+
+    # download gerrit
+    download {
+        "$gerrit_home/gerrit-$gerrit_version":
+            uri => "http://gerrit.googlecode.com/files/gerrit-$gerrit_version.war",
+    }
+
 }
