@@ -61,7 +61,7 @@ class gerrit (
 
     # download gerrit
     download {
-        "$gerrit_home/gerrit-$gerrit_version":
+        "$gerrit_home/gerrit-$gerrit_version.war":
             uri => "http://gerrit.googlecode.com/files/gerrit-$gerrit_version.war",
     }
 
