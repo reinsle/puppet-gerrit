@@ -68,7 +68,7 @@ class gerrit (
     # Funktion für Download eines Files per URL
     exec { "download_gerrit":
         command => "wget -q '$uri' -O $name",
-        creates => ${gerrit_home/gerrit-${gerrit_version}.war},
+        creates => ${gerrit_home}/gerrit-${gerrit_version}.war,
         timeout => $timeout,
         require => Package["wget"],
     }
