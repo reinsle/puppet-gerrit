@@ -26,8 +26,8 @@ class gerrit (
 
     # Crate Group for gerrit
     group { $gerrit_group:
-        gid    => "$gerrit_gid", 
-        ensure => "present",
+        gid        => "$gerrit_gid", 
+        ensure     => "present",
     }
 
     # Create User for gerrit-home
