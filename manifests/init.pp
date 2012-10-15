@@ -73,7 +73,7 @@ class gerrit (
             creates => "$gerrit_home/review_site",
             require => [
                             Package["openjdk-6-jdk"],
-                            File["$gerrit_home/gerrit-$gerrit_version.war"],
+                            # File["$gerrit_home/gerrit-$gerrit_version.war"],
                         ],
     }
 
