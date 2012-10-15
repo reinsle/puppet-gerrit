@@ -47,6 +47,7 @@ class gerrit (
         gid        => "$gerrit_gid",
         ensure     => "present",
         managehome => true,
+        require    => Group["$gerrit_group"]
     }
 
     # Funktion für Download eines Files per URL
