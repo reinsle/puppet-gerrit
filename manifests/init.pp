@@ -42,12 +42,15 @@ class gerrit (
     }
 
     # Funktion für Download eines Files per URL
+    package { "wget":
+        ensure => installed,
+    }
     define download ($uri, $timeout = 300) {
         exec { "download $uri":
             command => "wget -q '$uri' -O $name",
             creates => $name,
             timeout => $timeout,
-            require => Package[ "wget" ],
+            require => Package["wget"],
         }
     }
 
