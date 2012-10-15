@@ -8,8 +8,23 @@
 # Standard class parameters
 # Define the general class behaviour and customizations
 #
-    # [*gerrit_version*]
-#   Version of gerrit
+# [*gerrit_version*]
+#   Version of gerrit to install
+#
+# [*gerrit_group*]
+#   Name of group gerrit runs under
+#
+# [*gerrit_gid*]
+#   GroupId of gerrit_group
+#
+# [*gerrit_user*]
+#   Name of user gerrit runs under
+#
+# [*gerrit_uid*]
+#   UserId of gerrit_user
+#
+# [*gerrit_home*]
+#   Home-Dir of gerrit user
 #
 # == Author
 #   Robert Einsle <robert@einsle.de>
