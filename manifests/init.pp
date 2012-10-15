@@ -66,19 +66,17 @@ class gerrit (
     }
 
     # Funktion für Download eines Files per URL
-    define download ($uri, $timeout = 300) {
-        exec { "download $uri":
-            command => "wget -q '$uri' -O $name",
-            creates => $name,
-            timeout => $timeout,
-            require => Package["wget"],
-        }
+    exec { "download_gerrit":
+        command => "wget -q '$uri' -O $name",
+        creates => ${gerrit_home/gerrit-${gerrit_version}.war},
+        timeout => $timeout,
+        require => Package["wget"],
     }
 
     # download gerrit
     download {
-        "$gerrit_home/gerrit-$gerrit_version.war":
-            uri => "http://gerrit.googlecode.com/files/gerrit-$gerrit_version.war",
+        "${gerrit_home}/gerrit-${gerrit_version}.war":
+            uri => "http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war",
     }
 
     # Initialisation of gerrit site
@@ -88,7 +86,7 @@ class gerrit (
             creates => "$gerrit_home/review_site",
             require => [
                             Package["openjdk-6-jdk"],
-                            # File["$gerrit_home/gerrit-$gerrit_version.war"],
+                            Exec["download_gerrit"],
                         ],
     }
 
