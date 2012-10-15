@@ -25,10 +25,10 @@ class gerrit (
     ) inherits gerrit::params {
 
     # Install required packages
-    package {   [ 
+    package { [ 
                 "wget",
                 "openjdk-6-jdk",
-                ]:
+              ]:
         ensure => installed,
     }
 
@@ -63,6 +63,17 @@ class gerrit (
     download {
         "$gerrit_home/gerrit-$gerrit_version.war":
             uri => "http://gerrit.googlecode.com/files/gerrit-$gerrit_version.war",
+    }
+
+    # Initialisation of gerrit site
+    exec {
+        "init_gerrit":
+            command => "java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start",
+            creates => "$gerrit_home/review_site",
+            require => [
+                            Package["openjdk-6-jdk"],
+                            File["$gerrit_home/gerrit-$gerrit_version.war"],
+                        ],
     }
 
 }
