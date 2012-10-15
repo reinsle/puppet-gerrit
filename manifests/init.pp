@@ -41,16 +41,16 @@ class gerrit (
 
     # Install required packages
     package { [ 
-                "wget",
-                "openjdk-6-jdk",
-              ]:
-        ensure => installed,
+            "wget",
+            "openjdk-6-jdk",
+        ]:
+            ensure => installed,
     }
-
+    
     # Crate Group for gerrit
     group { $gerrit_group:
-        gid        => "$gerrit_gid", 
-        ensure     => "present",
+            gid        => "$gerrit_gid", 
+            ensure     => "present",
     }
 
     # Create User for gerrit-home
@@ -67,27 +67,31 @@ class gerrit (
 
     # Funktion für Download eines Files per URL
     exec { "download_gerrit":
-        command => "wget -q '$uri' -O $name",
-        creates => ${gerrit_home}/gerrit-${gerrit_version}.war,
-        timeout => $timeout,
-        require => Package["wget"],
+        command => "wget -q 'http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war' -O ${gerrit_home}/gerrit-${gerrit_version}.war",
+        creates => "${gerrit_home}/gerrit-${gerrit_version}.war",
+        require => [ 
+        Package["wget"],
+            User["${gerrit_user}"],
+        ],
     }
 
-    # download gerrit
-    download {
-        "${gerrit_home}/gerrit-${gerrit_version}.war":
-            uri => "http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war",
+    # Changes user / group of gerrit war
+    file { "gerrit_war":
+        path => "${gerrit_home}/gerrit-${gerrit_version}.war",
+        owner => "${gerrit_user}",
+        group => "${gerrit_group}",
+        require => Exec["download_gerrit"],
     }
 
     # Initialisation of gerrit site
     exec {
         "init_gerrit":
-            command => "java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start",
-            creates => "$gerrit_home/review_site",
-            require => [
-                            Package["openjdk-6-jdk"],
-                            Exec["download_gerrit"],
-                        ],
+        command => "java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start",
+        creates => "$gerrit_home/review_site",
+        require => [
+            Package["openjdk-6-jdk"],
+            File["gerrit_war"],
+        ],
     }
 
 }
