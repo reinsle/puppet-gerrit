@@ -24,6 +24,14 @@ class gerrit (
     $gerrit_database_type = params_lookup('gerrit_database_type')
     ) inherits gerrit::params {
 
+    # Install required packages
+    package {   [ 
+                "wget",
+                "openjdk-6-jdk",
+                ]:
+        ensure => installed,
+    }
+
     # Crate Group for gerrit
     group { $gerrit_group:
         gid        => "$gerrit_gid", 
@@ -42,9 +50,6 @@ class gerrit (
     }
 
     # Funktion für Download eines Files per URL
-    package { "wget":
-        ensure => installed,
-    }
     define download ($uri, $timeout = 300) {
         exec { "download $uri":
             command => "wget -q '$uri' -O $name",
