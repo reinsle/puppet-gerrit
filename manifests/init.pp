@@ -111,7 +111,7 @@ class gerrit (
         group   => "${gerrit_group}",
         creates => "${gerrit_home}/${gerrit_site_name}",
         require => [
-            Package[ ,
+            Package["${gerrit_java}"],
             File["gerrit_war"],
         ],
     }
