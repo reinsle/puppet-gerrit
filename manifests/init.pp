@@ -47,16 +47,16 @@ class gerrit (
 
     # Install required packages
     package { [ 
-            "wget",
-            "openjdk-6-jdk",
+        "wget",
+        "openjdk-6-jdk",
         ]:
-            ensure => installed,
+        ensure => installed,
     }
     
     # Crate Group for gerrit
     group { $gerrit_group:
-            gid        => "$gerrit_gid", 
-            ensure     => "present",
+        gid        => "$gerrit_gid", 
+        ensure     => "present",
     }
 
     # Create User for gerrit-home
@@ -73,10 +73,10 @@ class gerrit (
 
     # Correct gerrit_home uid & gid
     file { "${gerrit_home}":
-        ensure  => directory,
-        owner   => "${gerrit_uid}",
-        group   => "${gerrit_gid}",
-        require => [
+        ensure     => directory,
+        owner      => "${gerrit_uid}",
+        group      => "${gerrit_gid}",
+        require    => [
             User["${gerrit_user}"],
             Group["${gerrit_group}"],
         ]
@@ -87,7 +87,7 @@ class gerrit (
         command => "wget -q 'http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war' -O ${gerrit_war_file}",
         creates => "${gerrit_war_file}",
         require => [ 
-        Package["wget"],
+            Package["wget"],
             User["${gerrit_user}"],
         ],
     }
