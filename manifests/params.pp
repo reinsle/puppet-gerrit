@@ -24,6 +24,10 @@ class gerrit::params {
   $gerrit_uid = $::operatingsystem ? {
     default => '515',
   }
+  # Name of gerrit review site directory
+  $gerrit_site_name = $::operatingsystem ? {
+    default => 'review_site',
+  }
   # type of Database storing configs of gerrit ['mysql' / 'pgsql']
   $gerrit_database_type = $::operatingsystem ? {
     default => 'pgsql',

@@ -26,6 +26,9 @@
 # [*gerrit_home*]
 #   Home-Dir of gerrit user
 #
+# [*gerrit_site_name*]
+#   Name of gerrit review site directory
+#
 # == Author
 #   Robert Einsle <robert@einsle.de>
 #
@@ -36,8 +39,11 @@ class gerrit (
     $gerrit_user          = params_lookup('gerrit_user'),
     $gerrit_home          = params_lookup('gerrit_home'),
     $gerrit_uid           = params_lookup('gerrit_uid'),
+    $gerrit_site_name     = params_lookup('gerrit_site_name'),
     $gerrit_database_type = params_lookup('gerrit_database_type')
     ) inherits gerrit::params {
+
+    $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
 
     # Install required packages
     package { [ 
@@ -78,8 +84,8 @@ class gerrit (
 
     # Funktion für Download eines Files per URL
     exec { "download_gerrit":
-        command => "wget -q 'http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war' -O ${gerrit_home}/gerrit-${gerrit_version}.war",
-        creates => "${gerrit_home}/gerrit-${gerrit_version}.war",
+        command => "wget -q 'http://gerrit.googlecode.com/files/gerrit-${gerrit_version}.war' -O ${gerrit_war_file}",
+        creates => "${gerrit_war_file}",
         require => [ 
         Package["wget"],
             User["${gerrit_user}"],
@@ -88,7 +94,7 @@ class gerrit (
 
     # Changes user / group of gerrit war
     file { "gerrit_war":
-        path => "${gerrit_home}/gerrit-${gerrit_version}.war",
+        path => "${gerrit_war_file}",
         owner => "${gerrit_user}",
         group => "${gerrit_group}",
         require => Exec["download_gerrit"],
@@ -97,8 +103,8 @@ class gerrit (
     # Initialisation of gerrit site
     exec {
         "init_gerrit":
-        command => "su - ${gerrit_user} -c 'java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start'",
-        creates => "$gerrit_home/review_site",
+        command => "su - ${gerrit_user} -c 'java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start'",
+        creates => "${gerrit_home}/${gerrit_site_name}",
         require => [
             Package["openjdk-6-jdk"],
             File["gerrit_war"],
