@@ -48,13 +48,13 @@ class gerrit (
     }
     
     # Crate Group for gerrit
-    group { $gerrit_group:
+    group { ${gerrit_group}:
             gid        => "$gerrit_gid", 
             ensure     => "present",
     }
 
     # Create User for gerrit-home
-    user { $gerrit_user:
+    user { ${gerrit_user}:
         comment    => "User for gerrit instance",
         home       => "$gerrit_home",
         shell      => "/bin/false",
@@ -63,6 +63,17 @@ class gerrit (
         ensure     => "present",
         managehome => true,
         require    => Group["$gerrit_group"]
+    }
+
+    # Correct gerrit_home uid & gid
+    file { "${gerrit_home}":
+        ensure  => directory,
+        owner   => "${gerrit_uid}",
+        group   => "${gerrit_gid}",
+        require => [
+            User["${gerrit_user}"],
+            Group["${gerrit_group}"],
+        ]
     }
 
     # Funktion für Download eines Files per URL
@@ -86,7 +97,7 @@ class gerrit (
     # Initialisation of gerrit site
     exec {
         "init_gerrit":
-        command => "java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start",
+        command => "su - ${gerrit_user} -c 'java -jar $gerrit_home/gerrit-$gerrit_version.war init -d $gerrit_home/review_site --batch --no-auto-start'",
         creates => "$gerrit_home/review_site",
         require => [
             Package["openjdk-6-jdk"],
