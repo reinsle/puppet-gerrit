@@ -103,10 +103,12 @@ class gerrit (
     # Initialisation of gerrit site
     exec {
         "init_gerrit":
-        command => "su - ${gerrit_user} -s /bin/bash -c 'java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start'",
+        command => "java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start",
+        user    => "${gerrit_user}",
+        group   => "${gerrit_group}",
         creates => "${gerrit_home}/${gerrit_site_name}",
         require => [
-            Package["openjdk-6-jdk"],
+            Package[ ,
             File["gerrit_war"],
         ],
     }

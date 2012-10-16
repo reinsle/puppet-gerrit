@@ -32,4 +32,11 @@ class gerrit::params {
   $gerrit_database_type = $::operatingsystem ? {
     default => 'pgsql',
   }
+
+  # Package to install for providing JAVA
+  $gerrit_java = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/ => 'openjdk-6-jdk',
+    default                   => 'java-1.6.0-openjdk',
+  }
+
 }
