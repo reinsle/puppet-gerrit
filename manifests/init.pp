@@ -48,13 +48,13 @@ class gerrit (
     }
     
     # Crate Group for gerrit
-    group { ${gerrit_group}:
+    group { $gerrit_group:
             gid        => "$gerrit_gid", 
             ensure     => "present",
     }
 
     # Create User for gerrit-home
-    user { ${gerrit_user}:
+    user { $gerrit_user:
         comment    => "User for gerrit instance",
         home       => "$gerrit_home",
         shell      => "/bin/false",
