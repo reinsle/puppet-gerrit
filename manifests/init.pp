@@ -40,7 +40,8 @@ class gerrit (
     $gerrit_home          = params_lookup('gerrit_home'),
     $gerrit_uid           = params_lookup('gerrit_uid'),
     $gerrit_site_name     = params_lookup('gerrit_site_name'),
-    $gerrit_database_type = params_lookup('gerrit_database_type')
+    $gerrit_database_type = params_lookup('gerrit_database_type'),
+    $gerrit_java          = params_lookup('gerrit_java'),
     ) inherits gerrit::params {
 
     $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
@@ -48,9 +49,11 @@ class gerrit (
     # Install required packages
     package { [ 
         "wget",
-        "openjdk-6-jdk",
         ]:
+        ensure => installed;
+        "gerrit_java":
         ensure => installed,
+        name   => "${gerrit_java}",
     }
     
     # Crate Group for gerrit
