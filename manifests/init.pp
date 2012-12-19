@@ -186,9 +186,10 @@ class gerrit (
   }
 
   service { 'gerrit':
-    ensure  => running,
-    pattern => 'GerritCodeReview',
-    require => File['/etc/init.d/gerrit']
+    ensure    => running,
+    hasstatus => false,
+    pattern   => 'GerritCodeReview',
+    require   => File['/etc/init.d/gerrit']
   }
 
 }
