@@ -67,6 +67,12 @@ class gerrit (
 
   $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
 
+  #LDAP
+  $use_ldap = $auth_type ? {
+    /(LDAP|HTTP_LDAP)/ => true,
+    default            => false,
+  }
+
   # Install required packages
   package { [ 
   "wget",
