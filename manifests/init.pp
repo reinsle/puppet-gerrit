@@ -115,6 +115,7 @@ class gerrit (
   # Funktion für Download eines Files per URL
   exec { "download_gerrit":
     command => "wget -q '${download_mirror}/${warfile}' -O ${gerrit_war_file}",
+    path => ["/usr/bin"],
     creates => "${gerrit_war_file}",
     require => [ 
     Package["wget"],
@@ -139,6 +140,7 @@ class gerrit (
     "init_gerrit":
       cwd       => $gerrit_home,
       command   => $command,
+      path => ["/usr/bin"],
       creates   => "${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
       logoutput => on_failure,
       require   => [
