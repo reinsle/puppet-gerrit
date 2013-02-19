@@ -49,4 +49,6 @@ class gerrit::params {
   $https_listen_url = "http://*:8080/"
 
   $sshd_listen_address = "*:29468"
+
+  $auth_type = "HTTP"
 }
