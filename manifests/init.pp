@@ -79,7 +79,7 @@ class gerrit (
 
   #LDAP
   $use_ldap = $auth_type ? {
-    /(LDAP|HTTP_LDAP)/ => true,
+    /(LDAP|HTTP_LDAP|CLIENT_SSL_CERT_LDAP)/ => true,
     default            => false,
   }
 
