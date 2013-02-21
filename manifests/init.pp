@@ -62,6 +62,16 @@ class gerrit (
   $httpd_listen_url     = params_lookup('httpd_listen_url'),
   $download_mirror      = 'http://gerrit.googlecode.com/files',
   $auth_type            = params_lookup('auth_type'),
+  $ldap_server          = undef,
+  $ldap_username        = undef,
+  $ldap_password        = undef,
+  $ldap_account_base    = undef,
+  $ldap_account_pattern = '(uid=${username})',
+  $ldap_account_full_name = 'cn',
+  $ldap_account_email_address = 'mail',
+  $ldap_group_base      = undef,
+  $ldap_group_pattern   = '(cn=${groupname})',
+  $ldap_group_member_pattern = '(memberUid=${username})',
   $email_format         = '{0}@example.com'
 ) inherits gerrit::params {
 
