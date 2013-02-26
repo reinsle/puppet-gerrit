@@ -62,6 +62,7 @@ class gerrit (
   $httpd_listen_url     = params_lookup('httpd_listen_url'),
   $download_mirror      = 'http://gerrit.googlecode.com/files',
   $auth_type            = params_lookup('auth_type'),
+  $gitweb		= false,
   $ldap_server          = undef,
   $ldap_username        = undef,
   $ldap_password        = undef,
@@ -91,6 +92,12 @@ class gerrit (
   "gerrit_java":
     ensure => installed,
     name   => "${gerrit_java}",
+  }
+
+  if $gitweb {
+    package { "gitweb":
+      ensure => installed;
+    }
   }
 
   # Crate Group for gerrit
