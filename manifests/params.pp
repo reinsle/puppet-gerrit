@@ -36,6 +36,21 @@ class gerrit::params {
   $gerrit_database_type = $::operatingsystem ? {
     default => 'pgsql',
   }
+  # 
+  $gerrit_database_password = $::operatingsystem ? {
+    default => "",
+  }
+  $gerrit_database_hostname = $::operatingsystem ? {
+    default => 'localhost',
+  }
+
+  $gerrit_database_database = $::operatingsystem ? {
+    default => 'db/ReviewDB',
+  }
+
+  $gerrit_database_username = $::operatingsystem ? {
+    default => 'gerrit',
+  }
 
   # Package to install for providing JAVA
   $gerrit_java = $::operatingsystem ? {
@@ -43,10 +58,8 @@ class gerrit::params {
     default                   => 'java-1.6.0-openjdk',
   }
 
-  # 
-  $canonical_web_url = "http://$fqdn:8080/"
-  # 
-  $https_listen_url = "http://*:8080/"
+  $canonical_web_url = "http://${::fqdn}/"
+  $httpd_listen_url = 'http://*:8080/'
 
-  $sshd_listen_address = "*:29468"
+  $sshd_listen_address = '*:29468'
 }
