@@ -34,6 +34,21 @@
 #
 # Gerrit config variables:
 #
+# [*gerrit_database_type*]
+#   Database type for gerrit.config file
+#
+# [*gerrit_database_hostname*]
+#   Database hostname for gerrit.config file
+#
+# [*gerrit_database_database*]
+#   Database name for gerrit.config file
+#
+# [*gerrit_database_username*]
+#   Database username for gerrit.config file
+#
+# [*gerrit_database_password*]
+#   Database password for gerrit.config file
+#
 # [*canonical_web_url*]
 #   Canonical URL of the Gerrit review site, used on generated links
 #
@@ -47,62 +62,66 @@
 #   Robert Einsle <robert@einsle.de>
 #
 class gerrit (
-  $gerrit_version       = params_lookup('gerrit_version'),
-  $gerrit_group         = params_lookup('gerrit_group'),
-  $gerrit_gid           = params_lookup('gerrit_gid'),
-  $gerrit_user          = params_lookup('gerrit_user'),
-  $gerrit_groups        = params_lookup('gerrit_groups'),
-  $gerrit_home          = params_lookup('gerrit_home'),
-  $gerrit_uid           = params_lookup('gerrit_uid'),
-  $gerrit_site_name     = params_lookup('gerrit_site_name'),
-  $gerrit_database_type = params_lookup('gerrit_database_type'),
-  $gerrit_java          = params_lookup('gerrit_java'),
-  $canonical_web_url    = params_lookup('canonical_web_url'),
-  $sshd_listen_address  = params_lookup('sshd_listen_address'),
-  $httpd_listen_url     = params_lookup('httpd_listen_url'),
-  $download_mirror      = 'http://gerrit.googlecode.com/files',
-  $email_format         = '{0}@example.com'
+  $gerrit_version           = $gerrit::params::gerrit_version,
+  $gerrit_group             = $gerrit::params::gerrit_group,
+  $gerrit_gid               = $gerrit::params::gerrit_gid,
+  $gerrit_user              = $gerrit::params::gerrit_user,
+  $gerrit_groups            = $gerrit::params::gerrit_groups,
+  $gerrit_home              = $gerrit::params::gerrit_home,
+  $gerrit_uid               = $gerrit::params::gerrit_uid,
+  $gerrit_site_name         = $gerrit::params::gerrit_site_name,
+  $gerrit_database_type     = $gerrit::params::gerrit_database_type,
+  $gerrit_database_hostname = $gerrit::params::gerrit_database_hostname,
+  $gerrit_database_database = $gerrit::params::gerrit_database_database,
+  $gerrit_database_username = $gerrit::params::gerrit_database_username,
+  $gerrit_database_password = $gerrit::params::gerrit_database_password,
+  $gerrit_java              = $gerrit::params::gerrit_java,
+  $canonical_web_url        = $gerrit::params::canonical_web_url,
+  $sshd_listen_address      = $gerrit::params::sshd_listen_address,
+  $httpd_listen_url         = $gerrit::params::httpd_listen_url,
+  $download_mirror          = 'http://gerrit.googlecode.com/files',
+  $email_format             = 'example.com'
 ) inherits gerrit::params {
 
   $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
 
   # Install required packages
-  package { [ 
-  "wget",
+  package { [
+  'wget', 'git'
   ]:
     ensure => installed;
-  "gerrit_java":
+  'gerrit_java':
     ensure => installed,
-    name   => "${gerrit_java}",
+    name   => $gerrit_java,
   }
 
   # Crate Group for gerrit
   group { $gerrit_group:
-    gid        => "$gerrit_gid", 
-    ensure     => "present",
+    ensure     => present,
+    gid        => $gerrit_gid,
   }
 
   # Create User for gerrit-home
   user { $gerrit_user:
-    comment    => "User for gerrit instance",
-    home       => "$gerrit_home",
-    shell      => "/bin/false",
-    uid        => "$gerrit_uid",
-    gid        => "$gerrit_gid",
+    ensure     => present,
+    comment    => 'User for gerrit instance',
+    home       => $gerrit_home,
+    shell      => '/bin/bash',
+    uid        => $gerrit_uid,
+    gid        => $gerrit_gid,
     groups     => $gerrit_groups,
-    ensure     => "present",
     managehome => true,
-    require    => Group["$gerrit_group"]
+    require    => Group[$gerrit_group]
   }
 
   # Correct gerrit_home uid & gid
-  file { "${gerrit_home}":
+  file { $gerrit_home:
     ensure     => directory,
-    owner      => "${gerrit_uid}",
-    group      => "${gerrit_gid}",
+    owner      => $gerrit_uid,
+    group      => $gerrit_gid,
     require    => [
-      User["${gerrit_user}"],
-      Group["${gerrit_group}"],
+      User[$gerrit_user],
+      Group[$gerrit_group],
     ]
   }
 
@@ -113,37 +132,37 @@ class gerrit (
   }
 
   # Funktion für Download eines Files per URL
-  exec { "download_gerrit":
+  exec { 'download_gerrit':
     command => "wget -q '${download_mirror}/${warfile}' -O ${gerrit_war_file}",
-    creates => "${gerrit_war_file}",
-    require => [ 
-    Package["wget"],
-    User["${gerrit_user}"],
+    creates => $gerrit_war_file,
+    require => [
+    Package['wget'],
+    User[$gerrit_user],
     File[$gerrit_home]
     ],
   }
 
   # Changes user / group of gerrit war
-  file { "gerrit_war":
-    path => "${gerrit_war_file}",
-    owner => "${gerrit_user}",
-    group => "${gerrit_group}",
-    require => Exec["download_gerrit"],
+  file { 'gerrit_war':
+    path    => $gerrit_war_file,
+    owner   => $gerrit_user,
+    group   => $gerrit_group,
+    require => Exec['download_gerrit'],
   }
 
   # ´exec' doesn't work with additional groups, so we resort to sudo
-  $command = "sudo -u ${gerrit_user} java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start"
+  $command = "sudo -u ${gerrit_user} java -jar ${gerrit_war_file} init -d ${gerrit_home}/${gerrit_site_name} --batch --no-auto-start"
 
   # Initialisation of gerrit site
   exec {
-    "init_gerrit":
+    'init_gerrit':
       cwd       => $gerrit_home,
       command   => $command,
       creates   => "${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
       logoutput => on_failure,
       require   => [
-        Package["${gerrit_java}"],
-        File["gerrit_war"],
+        Package[$gerrit_java],
+        File['gerrit_war'],
         ],
   }
 
