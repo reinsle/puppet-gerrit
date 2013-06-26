@@ -146,6 +146,7 @@ class gerrit (
     User["${gerrit_user}"],
     File[$gerrit_home]
     ],
+    notify => Exec["delete_old_gerrit_sh"],
   }
 
   # Changes user / group of gerrit war
@@ -155,6 +156,18 @@ class gerrit (
     group => "${gerrit_group}",
     require => Exec["download_gerrit"],
   }
+
+  exec { "delete_old_gerrit_sh":
+    command => "rm -f ${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
+    path => ["/bin"],
+    require => [ 
+    User["${gerrit_user}"],
+    File[$gerrit_home]
+    ],
+    refreshonly => true,
+    notify => Exec["init_gerrit"],
+  }
+
 
   # ´exec' doesn't work with additional groups, so we resort to sudo
   $command = "sudo -u ${gerrit_user} java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start"
