@@ -60,7 +60,7 @@ class gerrit (
   $canonical_web_url    = params_lookup('canonical_web_url'),
   $sshd_listen_address  = params_lookup('sshd_listen_address'),
   $httpd_listen_url     = params_lookup('httpd_listen_url'),
-  $download_mirror      = 'http://gerrit.googlecode.com/files',
+  $download_mirror      = 'http://gerrit-releases.storage.googleapis.com',
   $auth_type            = params_lookup('auth_type'),
   $gitweb		= false,
   $ldap_server          = undef,
@@ -130,7 +130,7 @@ class gerrit (
     ]
   }
 
-  if versioncmp($gerrit_version, '2.5') < 0 {
+  if versioncmp($gerrit_version, '2.5') < 0 or versioncmp($gerrit_version, '2.5.2') > 0{
     $warfile = "gerrit-${gerrit_version}.war"
   } else {
     $warfile = "gerrit-full-${gerrit_version}.war"
