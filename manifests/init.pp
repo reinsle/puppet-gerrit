@@ -201,7 +201,7 @@ class gerrit (
 
   # Manage Gerrit's configuration file (augeas would be more suitable).
   file { "${gerrit_home}/${gerrit_site_name}/etc/gerrit.config":
-    content => template('gerrit/gerrit.config'),
+    content => template('gerrit/gerrit.config.erb'),
     owner   => $gerrit_user,
     group   => $gerrit_group,
     mode    => '0444',

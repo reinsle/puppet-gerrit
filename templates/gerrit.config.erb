@@ -1,23 +1,23 @@
 [gerrit]
         basePath = git
-        canonicalWebUrl = <%= canonical_web_url %>
+        canonicalWebUrl = <%= @canonical_web_url %>
 [database]
         type = H2
         database = db/ReviewDB
 [auth]
-        type = <%= auth_type %>
+        type = <%= @auth_type %>
 <% if @email_format -%>
-	emailFormat = <%= email_format %>
+        emailFormat = <%= @email_format %>
 <% end -%>
 [sendemail]
         smtpServer = localhost
 [container]
         user = gerrit
-        javaHome = <%= gerrit_java_home %>
+        javaHome = <%= @gerrit_java_home %>
 [sshd]
-        listenAddress = <%= sshd_listen_address %>
+        listenAddress = <%= @sshd_listen_address %>
 [httpd]
-        listenUrl = <%= httpd_listen_url %>
+        listenUrl = <%= @httpd_listen_url %>
 [cache]
         directory = cache
 <% if @use_ldap -%>
