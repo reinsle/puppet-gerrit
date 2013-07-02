@@ -201,19 +201,6 @@ class gerrit (
     require => Exec['init_gerrit']
   }
 
-  # Make sure the init script starts on boot.
-  file { ['/etc/rc0.d/K10gerrit',
-          '/etc/rc1.d/K10gerrit',
-          '/etc/rc2.d/S90gerrit',
-          '/etc/rc3.d/S90gerrit',
-          '/etc/rc4.d/S90gerrit',
-          '/etc/rc5.d/S90gerrit',
-          '/etc/rc6.d/K10gerrit']:
-    ensure  => link,
-    target  => '/etc/init.d/gerrit',
-    require => File['/etc/init.d/gerrit'],
-  }
-
   # Manage Gerrit's configuration file (augeas would be more suitable).
   file { "${gerrit_home}/${gerrit_site_name}/etc/gerrit.config":
     content => template('gerrit/gerrit.config'),
@@ -226,6 +213,7 @@ class gerrit (
 
   service { 'gerrit':
     ensure    => running,
+    enable    => true,
     hasstatus => false,
     pattern   => 'GerritCodeReview',
     require   => File['/etc/init.d/gerrit']
