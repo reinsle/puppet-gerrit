@@ -85,10 +85,7 @@ class gerrit (
   }
 
   # Install required packages
-  package { [ 
-  "wget",
-  ]:
-    ensure => installed;
+  package {
   "gerrit_java":
     ensure => installed,
     name   => "${gerrit_java}",
