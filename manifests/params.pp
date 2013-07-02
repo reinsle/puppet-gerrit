@@ -46,7 +46,7 @@ class gerrit::params {
   # 
   $canonical_web_url = "http://$fqdn:8080/"
   # 
-  $https_listen_url = "http://*:8080/"
+  $httpd_listen_url = "http://*:8080/"
 
   $sshd_listen_address = "*:29468"
 
