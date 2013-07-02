@@ -57,6 +57,7 @@ class gerrit (
   $gerrit_site_name     = params_lookup('gerrit_site_name'),
   $gerrit_database_type = params_lookup('gerrit_database_type'),
   $gerrit_java          = params_lookup('gerrit_java'),
+  $gerrit_java_home     = params_lookup('gerrit_java_home'),
   $canonical_web_url    = params_lookup('canonical_web_url'),
   $sshd_listen_address  = params_lookup('sshd_listen_address'),
   $httpd_listen_url     = params_lookup('httpd_listen_url'),

@@ -43,6 +43,12 @@ class gerrit::params {
     default                   => 'java-1.6.0-openjdk',
   }
 
+  # where the jre is installed
+  $gerrit_java_home = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/ => "/usr/lib/jvm/java-6-openjdk-${::architecture}/jre",
+    default                   => '/usr/lib/jvm/java-6-openjdk/jre',
+  }
+
   # 
   $canonical_web_url = "http://$fqdn:8080/"
   # 
