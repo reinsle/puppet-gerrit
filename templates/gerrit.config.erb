@@ -14,6 +14,7 @@
 [container]
         user = gerrit
         javaHome = <%= @gerrit_java_home %>
+        heapLimit = <%= @gerrit_heap_limit %>
 [sshd]
         listenAddress = <%= @sshd_listen_address %>
 [httpd]
