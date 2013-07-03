@@ -54,7 +54,7 @@ class gerrit::params {
   # 
   $httpd_listen_url = "http://*:8080/"
 
-  $sshd_listen_address = "*:29468"
+  $sshd_listen_address = '*:29418'
 
   $auth_type = "HTTP"
 }
