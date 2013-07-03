@@ -1,0 +1,11 @@
+  location <%= @location %> {
+    proxy_pass <%= @proxy %>;
+<% if @proxy_read_timeout -%>
+    proxy_read_timeout <%= @proxy_read_timeout %>;
+<% end -%>
+<%  @proxy_set_header.each do |header| -%>
+    proxy_set_header        <%= header %>;
+<%  end %>
+    auth_basic            "<%= @auth_basic_realm %>";
+    auth_basic_user_file  <%= @htpasswd_path %>;
+  }
