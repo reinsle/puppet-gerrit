@@ -2,7 +2,7 @@
 class gerrit::params {
   # Version of gerrit
   $gerrit_version = $::operatingsystem ? {
-    default => '2.6',
+    default => '2.6.1',
   }
   # Group which gerrit is in
   $gerrit_group = $::operatingsystem ? {
