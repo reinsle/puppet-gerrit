@@ -157,7 +157,7 @@ class gerrit (
   }
 
   exec { "delete_old_gerrit_sh":
-    command => "/etc/init.d/gerrit stop; rm -f ${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
+    command => "service gerrit stop; rm -f ${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
     path => ["/bin"],
     require => [ 
     User["${gerrit_user}"],
