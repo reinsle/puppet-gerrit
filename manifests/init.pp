@@ -43,6 +43,11 @@
 # [*httpd_listen_url*]
 #   "<schema>://<ip>:<port>/<context>" for the Gerrit webapp to bind to
 #
+# [*my_class*]
+# Name of a custom class to autoload to manage module's customizations
+# If defined, apache class will automatically "include $my_class"
+# Can be defined also by the (top scope) variable $apache_myclass
+#
 # == Author
 #   Robert Einsle <robert@einsle.de>
 #
@@ -75,7 +80,8 @@ class gerrit (
   $ldap_group_base      = undef,
   $ldap_group_pattern   = '(cn=${groupname})',
   $ldap_group_member_pattern = '(memberUid=${username})',
-  $email_format         = '{0}@example.com'
+  $email_format         = '{0}@example.com',
+  $my_class             = params_lookup('my_class'),
 ) inherits gerrit::params {
 
   $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
@@ -218,4 +224,8 @@ class gerrit (
     require   => File['/etc/init.d/gerrit']
   }
 
+  ### Include custom class if $my_class is set
+  if $gerrit::my_class {
+    include $gerrit::my_class
+  }
 }
