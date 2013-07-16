@@ -1,4 +1,4 @@
-name 'puppet-gerrit'
+name 'reinsle-gerrit'
 version '0.0.1'
 
 author 'Robert Einsle <robert@einsle.de>'
@@ -7,3 +7,4 @@ project_page 'http://github.com/reinsle/puppet-gerrit'
 source ''
 summary ''
 description ''
+dependency 'example42/puppi', '>=2.0.8'

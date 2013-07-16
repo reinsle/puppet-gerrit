@@ -43,6 +43,11 @@
 # [*httpd_listen_url*]
 #   "<schema>://<ip>:<port>/<context>" for the Gerrit webapp to bind to
 #
+# [*my_class*]
+# Name of a custom class to autoload to manage module's customizations
+# If defined, apache class will automatically "include $my_class"
+# Can be defined also by the (top scope) variable $apache_myclass
+#
 # == Author
 #   Robert Einsle <robert@einsle.de>
 #
@@ -57,23 +62,47 @@ class gerrit (
   $gerrit_site_name     = params_lookup('gerrit_site_name'),
   $gerrit_database_type = params_lookup('gerrit_database_type'),
   $gerrit_java          = params_lookup('gerrit_java'),
+  $gerrit_java_home     = params_lookup('gerrit_java_home'),
+  $gerrit_heap_limit    = params_lookup('gerrit_heap_limit'),
   $canonical_web_url    = params_lookup('canonical_web_url'),
   $sshd_listen_address  = params_lookup('sshd_listen_address'),
   $httpd_listen_url     = params_lookup('httpd_listen_url'),
-  $download_mirror      = 'http://gerrit.googlecode.com/files',
-  $email_format         = '{0}@example.com'
+  $download_mirror      = 'http://gerrit-releases.storage.googleapis.com',
+  $auth_type            = params_lookup('auth_type'),
+  $gitweb		= false,
+  $ldap_server          = undef,
+  $ldap_username        = undef,
+  $ldap_password        = undef,
+  $ldap_account_base    = undef,
+  $ldap_account_pattern = '(uid=${username})',
+  $ldap_account_full_name = 'cn',
+  $ldap_account_email_address = 'mail',
+  $ldap_group_base      = undef,
+  $ldap_group_pattern   = '(cn=${groupname})',
+  $ldap_group_member_pattern = '(memberUid=${username})',
+  $email_format         = '{0}@example.com',
+  $my_class             = params_lookup('my_class'),
 ) inherits gerrit::params {
 
   $gerrit_war_file = "${gerrit_home}/gerrit-${gerrit_version}.war"
 
+  #LDAP
+  $use_ldap = $auth_type ? {
+    /(LDAP|HTTP_LDAP|CLIENT_SSL_CERT_LDAP)/ => true,
+    default            => false,
+  }
+
   # Install required packages
-  package { [ 
-  "wget",
-  ]:
-    ensure => installed;
+  package {
   "gerrit_java":
     ensure => installed,
     name   => "${gerrit_java}",
+  }
+
+  if $gitweb {
+    package { "gitweb":
+      ensure => installed;
+    }
   }
 
   # Crate Group for gerrit
@@ -106,7 +135,7 @@ class gerrit (
     ]
   }
 
-  if versioncmp($gerrit_version, '2.5') < 0 {
+  if versioncmp($gerrit_version, '2.5') < 0 or versioncmp($gerrit_version, '2.5.2') > 0{
     $warfile = "gerrit-${gerrit_version}.war"
   } else {
     $warfile = "gerrit-full-${gerrit_version}.war"
@@ -115,12 +144,14 @@ class gerrit (
   # Funktion für Download eines Files per URL
   exec { "download_gerrit":
     command => "wget -q '${download_mirror}/${warfile}' -O ${gerrit_war_file}",
+    path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
     creates => "${gerrit_war_file}",
     require => [ 
     Package["wget"],
     User["${gerrit_user}"],
     File[$gerrit_home]
     ],
+    notify => Exec["delete_old_gerrit_sh"],
   }
 
   # Changes user / group of gerrit war
@@ -131,6 +162,18 @@ class gerrit (
     require => Exec["download_gerrit"],
   }
 
+  exec { "delete_old_gerrit_sh":
+    command => "service gerrit stop; rm -f ${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
+    path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    require => [ 
+    User["${gerrit_user}"],
+    File[$gerrit_home]
+    ],
+    refreshonly => true,
+    notify => Exec["init_gerrit"],
+  }
+
+
   # ´exec' doesn't work with additional groups, so we resort to sudo
   $command = "sudo -u ${gerrit_user} java -jar ${gerrit_war_file} init -d $gerrit_home/${gerrit_site_name} --batch --no-auto-start"
 
@@ -139,6 +182,7 @@ class gerrit (
     "init_gerrit":
       cwd       => $gerrit_home,
       command   => $command,
+      path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       creates   => "${gerrit_home}/${gerrit_site_name}/bin/gerrit.sh",
       logoutput => on_failure,
       require   => [
@@ -162,22 +206,9 @@ class gerrit (
     require => Exec['init_gerrit']
   }
 
-  # Make sure the init script starts on boot.
-  file { ['/etc/rc0.d/K10gerrit',
-          '/etc/rc1.d/K10gerrit',
-          '/etc/rc2.d/S90gerrit',
-          '/etc/rc3.d/S90gerrit',
-          '/etc/rc4.d/S90gerrit',
-          '/etc/rc5.d/S90gerrit',
-          '/etc/rc6.d/K10gerrit']:
-    ensure  => link,
-    target  => '/etc/init.d/gerrit',
-    require => File['/etc/init.d/gerrit'],
-  }
-
   # Manage Gerrit's configuration file (augeas would be more suitable).
   file { "${gerrit_home}/${gerrit_site_name}/etc/gerrit.config":
-    content => template('gerrit/gerrit.config'),
+    content => template('gerrit/gerrit.config.erb'),
     owner   => $gerrit_user,
     group   => $gerrit_group,
     mode    => '0444',
@@ -187,9 +218,14 @@ class gerrit (
 
   service { 'gerrit':
     ensure    => running,
+    enable    => true,
     hasstatus => false,
     pattern   => 'GerritCodeReview',
     require   => File['/etc/init.d/gerrit']
   }
 
+  ### Include custom class if $my_class is set
+  if $gerrit::my_class {
+    include $gerrit::my_class
+  }
 }

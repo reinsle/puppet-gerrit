@@ -1,0 +1,43 @@
+[gerrit]
+        basePath = git
+        canonicalWebUrl = <%= @canonical_web_url %>
+[database]
+        type = H2
+        database = db/ReviewDB
+[auth]
+        type = <%= @auth_type %>
+<% if @email_format -%>
+        emailFormat = <%= @email_format %>
+<% end -%>
+[sendemail]
+        smtpServer = localhost
+[container]
+        user = gerrit
+        javaHome = <%= @gerrit_java_home %>
+<% if @gerrit_heap_limit -%>
+        heapLimit = <%= @gerrit_heap_limit %>
+<% end -%>
+[sshd]
+        listenAddress = <%= @sshd_listen_address %>
+[httpd]
+        listenUrl = <%= @httpd_listen_url %>
+[cache]
+        directory = cache
+<% if @use_ldap -%>
+[ldap]
+        server = <%= @ldap_server %>
+
+<% if @ldap_username -%>
+        username = <%= @ldap_username %>
+        password = <%= @ldap_password %>
+<% end -%>
+        accountBase = <%= @ldap_account_base %>
+        accountPattern = <%= @ldap_account_pattern %>
+        accountFullName = <%= @ldap_account_full_name %>
+        accountEmailAddress = <%= @ldap_account_email_address %>
+
+        groupBase = <%= @ldap_group_base %>
+        groupPattern = <%= @ldap_group_pattern %>
+        groupMemberPattern = <%= @ldap_group_member_pattern %>
+<% end -%>
+
