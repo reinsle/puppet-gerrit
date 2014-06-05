@@ -22,7 +22,7 @@ class gerrit::params {
   }
   # Home-Directory where gerrit whould be installed
   $gerrit_home = $::operatingsystem ? {
-    default => '/opt/gerrit',
+    default => '/srv/gerrit',
   }
   # UserID of created gerrit User
   $gerrit_uid = $::operatingsystem ? {
@@ -30,7 +30,7 @@ class gerrit::params {
   }
   # Name of gerrit review site directory
   $gerrit_site_name = $::operatingsystem ? {
-    default => 'review_site',
+    default => 'Openstack CI',
   }
   # type of Database storing configs of gerrit ['mysql' / 'pgsql' / 'h2']
   $gerrit_database_type = $::operatingsystem ? {
