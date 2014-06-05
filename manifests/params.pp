@@ -34,13 +34,13 @@ class gerrit::params {
   }
   # type of Database storing configs of gerrit ['mysql' / 'pgsql' / 'h2']
   $gerrit_database_type = $::operatingsystem ? {
-    default => 'pgsql',
+    default => 'mysql',
   }
 
   # Package to install for providing JAVA
   $gerrit_java = $::operatingsystem ? {
-    /(?i:Debian|Ubuntu|Mint)/ => 'openjdk-6-jdk',
-    default                   => 'java-1.6.0-openjdk',
+    /(?i:Debian|Ubuntu|Mint)/ => 'openjdk-7-jdk',
+    default                   => 'java-1.7.0-openjdk',
   }
 
   # 
