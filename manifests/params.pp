@@ -30,7 +30,7 @@ class gerrit::params {
   }
   # Name of gerrit review site directory
   $gerrit_site_name = $::operatingsystem ? {
-    default => 'Openstack CI',
+    default => 'review',
   }
   # type of Database storing configs of gerrit ['mysql' / 'pgsql' / 'h2']
   $gerrit_database_type = $::operatingsystem ? {
