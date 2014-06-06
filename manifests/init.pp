@@ -60,7 +60,7 @@ class gerrit (
   $canonical_web_url    = params_lookup('canonical_web_url'),
   $sshd_listen_address  = params_lookup('sshd_listen_address'),
   $httpd_listen_url     = params_lookup('httpd_listen_url'),
-  $download_mirror      = 'http://gerrit.googlecode.com/files',
+  $download_mirror      = 'http://gerrit-releases.storage.googleapis.com/',
   $email_format         = '{0}@example.com'
 ) inherits gerrit::params {
 

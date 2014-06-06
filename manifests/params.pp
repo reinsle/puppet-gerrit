@@ -2,7 +2,7 @@
 class gerrit::params {
   # Version of gerrit
   $gerrit_version = $::operatingsystem ? {
-    default => '2.5',
+    default => '2.8.5',
   }
   # Group which gerrit is in
   $gerrit_group = $::operatingsystem ? {
@@ -22,7 +22,7 @@ class gerrit::params {
   }
   # Home-Directory where gerrit whould be installed
   $gerrit_home = $::operatingsystem ? {
-    default => '/opt/gerrit',
+    default => '/srv/gerrit',
   }
   # UserID of created gerrit User
   $gerrit_uid = $::operatingsystem ? {
@@ -30,17 +30,17 @@ class gerrit::params {
   }
   # Name of gerrit review site directory
   $gerrit_site_name = $::operatingsystem ? {
-    default => 'review_site',
+    default => 'review',
   }
   # type of Database storing configs of gerrit ['mysql' / 'pgsql' / 'h2']
   $gerrit_database_type = $::operatingsystem ? {
-    default => 'pgsql',
+    default => 'mysql',
   }
 
   # Package to install for providing JAVA
   $gerrit_java = $::operatingsystem ? {
-    /(?i:Debian|Ubuntu|Mint)/ => 'openjdk-6-jdk',
-    default                   => 'java-1.6.0-openjdk',
+    /(?i:Debian|Ubuntu|Mint)/ => 'openjdk-7-jdk',
+    default                   => 'java-1.7.0-openjdk',
   }
 
   # 
