@@ -112,6 +112,7 @@ class gerrit (
     $warfile = "gerrit-full-${gerrit_version}.war"
   }
 
+  # Funktion für Download eines Files per URL
   exec { "download_gerrit":
     command => "wget -q '${download_mirror}/${warfile}' -O ${gerrit_war_file}",
     creates => "${gerrit_war_file}",
